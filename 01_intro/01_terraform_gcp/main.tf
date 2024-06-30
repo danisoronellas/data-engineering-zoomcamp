@@ -8,14 +8,14 @@ terraform {
 }
 
 provider "google" {
-  credentials = "./keys/creds.json"
-  project     = "ferrous-amphora-412123"
-  region      = "us-central1"
+  credentials = file(var.credentials)
+  project     = local.project_id
+  region      = local.region
 }
 
 resource "google_storage_bucket" "demo-bucket" {
-  location      = "US"
-  name          = "ferrous-amphora-412123-terra-bucket"
+  location      = var.location
+  name          = var.gcs_bucket_name
   force_destroy = true
 
   lifecycle_rule {
@@ -26,4 +26,9 @@ resource "google_storage_bucket" "demo-bucket" {
       type = "AbortIncompleteMultipartUpload"
     }
   }
+}
+
+resource "google_bigquery_dataset" "demo_dataset" {
+  dataset_id = var.bq_dataset_name
+  location   = var.location
 }
